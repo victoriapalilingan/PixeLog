@@ -11,4 +11,4 @@ import SignUpPage from './src/pages/SignUp';
 import HomeScreen from './src/pages/Home';
 import WriteJournal from './src/pages/WriteJournal';
 
-AppRegistry.registerComponent(appName, () => WriteJournal);
+AppRegistry.registerComponent(appName, () => App);

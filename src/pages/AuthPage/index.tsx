@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useMemo, useState, useEffect, useRef} from 'react';
 import {
   StyleSheet,
   View,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   Platform,
   Image,
+  Animated,
 } from 'react-native';
 
 import CheckerboardBackground from '../../components/molecules/CheckerdboardBackground';
@@ -15,17 +16,38 @@ import PixelPopup from '../../components/molecules/PixelPopUp';
 import PixeLogLogo from '../../assets/PixeLog.png';
 
 const AuthPage = ({route, navigation}) => {
-  const initialMode = route?.params?.mode || 'signIn'; // 'signIn' | 'signUp'
+  const initialMode = route?.params?.mode || 'signIn';
   const [mode, setMode] = useState(initialMode);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
   const [loading, setLoading] = useState(false);
-
-  // ✅ popup state
   const [popupVisible, setPopupVisible] = useState(false);
+
+  /* ================= LOGO BOUNCE ANIMATION ================= */
+  const bounceAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const bounceLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(bounceAnim, {
+          toValue: -6,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(bounceAnim, {
+          toValue: 0,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+
+    bounceLoop.start();
+    return () => bounceLoop.stop();
+  }, [bounceAnim]);
+  /* ========================================================= */
 
   const config = useMemo(() => {
     if (mode === 'signUp') {
@@ -53,7 +75,6 @@ const AuthPage = ({route, navigation}) => {
     };
   }, [mode]);
 
-  // ✅ UI-only submit
   const onSubmit = () => {
     setLoading(true);
 
@@ -61,12 +82,10 @@ const AuthPage = ({route, navigation}) => {
       setLoading(false);
 
       if (mode === 'signUp') {
-        // ✅ SignUp -> tampil popup
         setPopupVisible(true);
         return;
       }
 
-      // ✅ SignIn -> navigate ke HomeScreen
       navigation.replace('HomeScreen');
     }, 600);
   };
@@ -76,7 +95,6 @@ const AuthPage = ({route, navigation}) => {
   };
 
   const goToSignIn = () => {
-    // tombol "LOGIN NOW" di popup
     setPopupVisible(false);
     setMode('signIn');
   };
@@ -85,7 +103,6 @@ const AuthPage = ({route, navigation}) => {
     <View style={styles.container}>
       <CheckerboardBackground />
 
-      {/* ✅ POPUP sukses signup (UI ONLY) */}
       <PixelPopup
         visible={popupVisible}
         onClose={() => setPopupVisible(false)}
@@ -103,13 +120,18 @@ const AuthPage = ({route, navigation}) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
-          <View style={styles.logoContainer}>
+          {/* ===== LOGO WITH BOUNCE ===== */}
+          <Animated.View
+            style={[
+              styles.logoContainer,
+              {transform: [{translateY: bounceAnim}]},
+            ]}>
             <Image
               source={PixeLogLogo}
               style={styles.logo}
               resizeMode="contain"
             />
-          </View>
+          </Animated.View>
 
           <SignInCard
             subtitle={config.subtitle}
@@ -161,6 +183,13 @@ const styles = StyleSheet.create({
   container: {flex: 1},
   keyboardView: {flex: 1},
   scrollContent: {flexGrow: 1, justifyContent: 'space-between'},
-  logoContainer: {alignItems: 'center', paddingTop: 10, paddingBottom: 10},
-  logo: {width: 400, height: 400},
+  logoContainer: {
+    alignItems: 'center',
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  logo: {
+    width: 400,
+    height: 400,
+  },
 });
