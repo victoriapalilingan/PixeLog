@@ -2,21 +2,22 @@ import React from 'react';
 import {StyleSheet, View, Image} from 'react-native';
 import PixelText from '../../atoms/PixelText';
 import PixelButton from '../../atoms/PixelButton';
-import AuthField from '../../molecules/AuthField';
 import AuthFooterLink from '../../molecules/AuthFooterLink';
 import Star from '../../../assets/Star.png';
 
 const SignInCard = ({
-  email,
-  password,
-  onChangeEmail,
-  onChangePassword,
   onPressLogin,
   onPressRegister,
   loading = false,
+
+  // ✅ hanya panjang card yang bisa diatur
+  cardHeight = '55%',
+
+  // ✅ form dimasukkan dari luar
+  children,
 }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {minHeight: cardHeight}]}>
       {/* ===== Decorative rectangles ===== */}
       <View style={styles.decorLayer} pointerEvents="none">
         <View style={[styles.decorBox, styles.decorTopRight]} />
@@ -46,24 +47,8 @@ const SignInCard = ({
         </PixelText>
       </View>
 
-      {/* Form */}
-      <View style={styles.formContainer}>
-        <AuthField
-          label="Email"
-          placeholder="youremail@gmail.com"
-          value={email}
-          onChangeText={onChangeEmail}
-          keyboardType="email-address"
-        />
-
-        <AuthField
-          label="Password"
-          placeholder="••••••••••••••"
-          value={password}
-          onChangeText={onChangePassword}
-          secureTextEntry
-        />
-      </View>
+      {/* ✅ FORM dari luar */}
+      <View style={styles.formContainer}>{children}</View>
 
       {/* Button */}
       <PixelButton
@@ -98,7 +83,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 18,
     paddingBottom: 28,
-    minHeight: '55%',
 
     shadowColor: '#000',
     shadowOffset: {width: 0, height: -4},
@@ -186,16 +170,9 @@ const styles = StyleSheet.create({
     maxWidth: '90%',
   },
 
-  /* ===== Form ===== */
+  /* ✅ Form slot */
   formContainer: {
     marginBottom: 18,
-    zIndex: 2,
-  },
-
-  /* ===== Loading ===== */
-  loadingContainer: {
-    marginTop: 14,
-    alignItems: 'center',
     zIndex: 2,
   },
 });

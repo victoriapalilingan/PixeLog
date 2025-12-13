@@ -11,16 +11,16 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import CheckerboardBackground from '../../components/molecules/CheckerdboardBackground';
 import SignInCard from '../../components/organism/SignInCard';
+import AuthField from '../../components/molecules/AuthField'; // ✅ pindah ke sini
 import PixeLogLogo from '../../assets/PixeLog.png';
 
-const SignInPage = ({navigation}: any) => {
+const SignInPage = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     setLoading(true);
-
     setTimeout(() => {
       console.log('Login:', {email, password});
       setLoading(false);
@@ -35,7 +35,6 @@ const SignInPage = ({navigation}: any) => {
 
   return (
     <View style={styles.container}>
-      {/* Background Gradient */}
       <LinearGradient
         colors={[
           '#E5F9FF',
@@ -63,7 +62,6 @@ const SignInPage = ({navigation}: any) => {
         style={StyleSheet.absoluteFill}
       />
 
-      {/* Checkerboard Pattern */}
       <CheckerboardBackground />
 
       <KeyboardAvoidingView
@@ -73,7 +71,6 @@ const SignInPage = ({navigation}: any) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
-          {/* Logo Area (Bagian Atas) */}
           <View style={styles.logoContainer}>
             <Image
               source={PixeLogLogo}
@@ -82,16 +79,29 @@ const SignInPage = ({navigation}: any) => {
             />
           </View>
 
-          {/* Sign In Card (Bottom Sheet) */}
+          {/* ✅ SignInCard sekarang jadi wrapper */}
           <SignInCard
-            email={email}
-            password={password}
-            onChangeEmail={setEmail}
-            onChangePassword={setPassword}
             onPressLogin={handleLogin}
             onPressRegister={handleRegister}
             loading={loading}
-          />
+            cardHeight="55%">
+            {/* ✅ AuthField dipanggil di page */}
+            <AuthField
+              label="Email"
+              placeholder="youremail@gmail.com"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+            />
+
+            <AuthField
+              label="Password"
+              placeholder="••••••••••••••"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+          </SignInCard>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -109,7 +119,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    justifyContent: 'space-between', // logo di atas, card di bawah
+    justifyContent: 'space-between',
   },
   logoContainer: {
     alignItems: 'center',
