@@ -7,5 +7,6 @@ import App from './App';
 import {name as appName} from './app.json';
 import SplashScreen from './src/pages/SplashScreen';
 import SignInPage from './src/pages/SignIn';
+import SignUpPage from './src/pages/SignUp';
 
-AppRegistry.registerComponent(appName, () => SignInPage);
+AppRegistry.registerComponent(appName, () => SignUpPage);

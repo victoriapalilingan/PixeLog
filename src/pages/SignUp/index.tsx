@@ -14,25 +14,22 @@ import SignInCard from '../../components/organism/SignInCard';
 import AuthField from '../../components/molecules/AuthField';
 import PixeLogLogo from '../../assets/PixeLog.png';
 
-const SignInPage = ({navigation}) => {
+const SignUpPage = ({navigation}) => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
+  const handleSignUp = () => {
     setLoading(true);
-
     setTimeout(() => {
-      console.log('Login:', {email, password});
+      console.log('Sign Up:', {name, email, password});
       setLoading(false);
-      // navigation.navigate('Main');
     }, 2000);
   };
 
-  const handleGoToSignUp = () => {
-    console.log('Navigate to SignUp');
-    // ✅ kalau pakai react-navigation, aktifkan ini:
-    // navigation.navigate('SignUp');
+  const handleGoToSignIn = () => {
+    // navigation.navigate('SignIn');
   };
 
   return (
@@ -73,6 +70,7 @@ const SignInPage = ({navigation}) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
+          {/* ✅ LOGO DINAİKKAN */}
           <View style={styles.logoContainer}>
             <Image
               source={PixeLogLogo}
@@ -82,16 +80,22 @@ const SignInPage = ({navigation}) => {
           </View>
 
           <SignInCard
-            subtitle="Let’s Start Your"
-            title="Pixel Diary Journey"
-            description="Write, track, and organize your moments in a cozy pastel pixel world."
-            primaryButtonTitle="Log In"
-            onPressPrimary={handleLogin}
-            footerText="Don't have an account?"
-            footerActionText="Sign Up"
-            onPressFooter={handleGoToSignUp}
-            loading={loading}
-            cardHeight="55%">
+            subtitle="Create Account"
+            title="Pixel Diary"
+            description="Create your account and begin your cozy pixel diary experience."
+            primaryButtonTitle="Sign Up"
+            onPressPrimary={handleSignUp}
+            footerText="Already have an account?"
+            footerActionText="Sign In"
+            onPressFooter={handleGoToSignIn}
+            cardHeight="65%">
+            <AuthField
+              label="Name"
+              placeholder="yourname"
+              value={name}
+              onChangeText={setName}
+            />
+
             <AuthField
               label="Email"
               placeholder="youremail@gmail.com"
@@ -114,7 +118,7 @@ const SignInPage = ({navigation}) => {
   );
 };
 
-export default SignInPage;
+export default SignUpPage;
 
 const styles = StyleSheet.create({
   container: {
@@ -127,13 +131,16 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'space-between',
   },
+
+  /* 🔼 LOGO DIANGKAT KE ATAS */
   logoContainer: {
     alignItems: 'center',
-    paddingTop: 10,
-    paddingBottom: 10,
+    marginTop: -30, // ⬅️ UBAH INI ( -40 / -60 / -80 )
+    marginBottom: 0,
   },
+
   logo: {
-    width: 400,
-    height: 400,
+    width: 360, // boleh kecilkan dikit biar proporsional
+    height: 360,
   },
 });
