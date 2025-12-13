@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
 
   normal: {
-    fontFamily: 'PixelifySans-Bold',
+    fontFamily: 'MontserratAlternates-ExtraBold',
     fontSize: 16,
     marginTop: 8,
     color: '#666',
