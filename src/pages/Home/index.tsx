@@ -13,6 +13,8 @@ import HomeHeader from '../../components/organism/HomeHeader';
 import CheckerboardBackground from '../../components/molecules/CheckerdboardBackground';
 import Gap from '../../components/atoms/Gap';
 import JournalHighlightCard from '../../components/molecules/JournalHighligtCard';
+import QuickActionsGrid from '../../components/organism/QuickActionsGrid';
+import RecentLogsSection from '../../components/organism/RecentLogsSection';
 
 const NAV_HEIGHT_GUESS = 70;
 
@@ -69,6 +71,15 @@ const HomeScreen = ({navigation}) => {
         <View style={styles.section}>
           <JournalHighlightCard />
         </View>
+        <Gap height={16} />
+
+        <QuickActionsGrid />
+
+        <Gap height={20} />
+
+        <RecentLogsSection />
+
+        <Gap height={20} />
       </ScrollView>
     </View>
   );
