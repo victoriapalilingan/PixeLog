@@ -1,0 +1,113 @@
+import React from 'react';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import PixelText from '../../atoms/PixelText';
+import PixelIcon from '../../atoms/PixelIcon';
+
+import BackIcon from '../../../assets/Back To.png'; // sesuaikan asset
+import StarIcon from '../../../assets/Star.png';
+
+const PixelHeader = ({
+  title = '',
+  showBack = false,
+  onPressBack,
+  rightIcon = StarIcon,
+  onPressRight,
+}) => {
+  return (
+    <View style={styles.container}>
+      {/* ===== Left (Back Button or Spacer) ===== */}
+      {showBack ? (
+        <TouchableOpacity
+          onPress={onPressBack}
+          activeOpacity={0.7}
+          style={styles.leftButton}>
+          <PixelIcon source={BackIcon} size={18} />
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.leftSpacer} />
+      )}
+
+      {/* ===== Title ===== */}
+      <PixelText
+        variant="pixel"
+        weight="bold"
+        style={styles.title}
+        numberOfLines={1}>
+        {title}
+      </PixelText>
+
+      {/* ===== Right Icon ===== */}
+      {rightIcon ? (
+        <TouchableOpacity
+          onPress={onPressRight}
+          activeOpacity={0.7}
+          style={styles.rightButton}>
+          <PixelIcon source={rightIcon} size={22} />
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.rightSpacer} />
+      )}
+    </View>
+  );
+};
+
+export default PixelHeader;
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+    height: 52,
+    width: 370,
+    paddingHorizontal: 16,
+
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#000000',
+
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+    marginLeft: 20,
+    marginTop: 20,
+  },
+
+  /* ===== Left ===== */
+  leftButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  leftSpacer: {
+    width: 32,
+  },
+
+  /* ===== Title ===== */
+  title: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 20,
+    color: '#000',
+    letterSpacing: 0.5,
+  },
+
+  /* ===== Right ===== */
+  rightButton: {
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rightSpacer: {
+    width: 32,
+  },
+});

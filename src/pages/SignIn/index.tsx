@@ -14,25 +14,24 @@ import SignInCard from '../../components/organism/SignInCard';
 import AuthField from '../../components/molecules/AuthField';
 import PixeLogLogo from '../../assets/PixeLog.png';
 
-const SignInPage = ({navigation}) => {
+const SignInPage = ({navigation, route}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const fromHeight = route?.params?.fromHeight; // ✅ bisa "65%" kalau dari SignUp
+
   const handleLogin = () => {
     setLoading(true);
-
     setTimeout(() => {
       console.log('Login:', {email, password});
       setLoading(false);
-      // navigation.navigate('Main');
     }, 2000);
   };
 
   const handleGoToSignUp = () => {
-    console.log('Navigate to SignUp');
-    // ✅ kalau pakai react-navigation, aktifkan ini:
-    // navigation.navigate('SignUp');
+    // ✅ dari SignIn (55%) ke SignUp (65%)
+    navigation.navigate('SignUp', {fromHeight: '55%'});
   };
 
   return (
@@ -91,7 +90,9 @@ const SignInPage = ({navigation}) => {
             footerActionText="Sign Up"
             onPressFooter={handleGoToSignUp}
             loading={loading}
-            cardHeight="55%">
+            cardHeight="55%"
+            initialHeight={fromHeight || '55%'} // ✅ kalau dari SignUp: start 65% lalu turun ke 55%
+          >
             <AuthField
               label="Email"
               placeholder="youremail@gmail.com"
@@ -117,23 +118,9 @@ const SignInPage = ({navigation}) => {
 export default SignInPage;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'space-between',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    paddingTop: 10,
-    paddingBottom: 10,
-  },
-  logo: {
-    width: 400,
-    height: 400,
-  },
+  container: {flex: 1},
+  keyboardView: {flex: 1},
+  scrollContent: {flexGrow: 1, justifyContent: 'space-between'},
+  logoContainer: {alignItems: 'center', paddingTop: 10, paddingBottom: 10},
+  logo: {width: 400, height: 400},
 });

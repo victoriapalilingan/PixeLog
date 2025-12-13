@@ -1,61 +1,60 @@
 import React, {useEffect, useRef} from 'react';
-import {StyleSheet, View, Animated, Easing, Dimensions} from 'react-native';
+import {StyleSheet, View, Animated, Easing} from 'react-native';
 import PixelText from '../../atoms/PixelText';
 
-const {width} = Dimensions.get('window');
-
-const PixelLoadingBar = ({
-  totalBlocks = 8,
-  blockDelay = 150,
-  blockDuration = 200,
-  loopDelay = 250,
-}) => {
+const PixelLoadingBar = ({onComplete}) => {
+  const TOTAL_BLOCKS = 8;
   const blockAnims = useRef(
-    Array.from({length: totalBlocks}, () => new Animated.Value(0)),
+    Array.from({length: TOTAL_BLOCKS}, () => new Animated.Value(0)),
   ).current;
 
+  const doneRef = useRef(false);
+
   useEffect(() => {
-    let isMounted = true;
-    let timeoutId;
+    doneRef.current = false;
 
-    const animateBlocks = () => {
-      if (!isMounted) return;
+    // reset
+    blockAnims.forEach(a => a.setValue(0));
 
-      blockAnims.forEach(anim => anim.setValue(0));
+    // animasi isi 8 kotak sekali
+    const animations = blockAnims.map((anim, index) =>
+      Animated.sequence([
+        Animated.delay(index * 150),
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: 200,
+          easing: Easing.ease,
+          useNativeDriver: false,
+        }),
+      ]),
+    );
 
-      const animations = blockAnims.map((anim, index) =>
-        Animated.sequence([
-          Animated.delay(index * blockDelay),
-          Animated.timing(anim, {
-            toValue: 1,
-            duration: blockDuration,
-            easing: Easing.ease,
-            useNativeDriver: false,
-          }),
-        ]),
-      );
+    Animated.parallel(animations).start(({finished}) => {
+      if (!finished) return;
+      if (doneRef.current) return;
 
-      Animated.parallel(animations).start(() => {
-        if (!isMounted) return;
-        timeoutId = setTimeout(animateBlocks, loopDelay);
-      });
-    };
+      doneRef.current = true;
 
-    animateBlocks();
+      // kasih sedikit jeda biar user sempat lihat "penuh"
+      setTimeout(() => {
+        onComplete && onComplete();
+      }, 150);
+    });
 
     return () => {
-      isMounted = false;
-      if (timeoutId) clearTimeout(timeoutId);
+      doneRef.current = true;
     };
-  }, [blockAnims, blockDelay, blockDuration, loopDelay]);
+  }, [blockAnims, onComplete]);
 
   return (
-    <View style={styles.wrapper}>
-      <PixelText style={styles.loadingText}>LOADING....</PixelText>
+    <View style={styles.loadingBarWrapper}>
+      <PixelText variant="pixel" style={styles.loadingText}>
+        LOADING....
+      </PixelText>
 
-      <View style={styles.barContainer}>
-        <View style={styles.barOuter}>
-          <View style={styles.blocksRow}>
+      <View style={styles.loadingBarContainer}>
+        <View style={styles.loadingBarOuter}>
+          <View style={styles.blocksContainer}>
             {blockAnims.map((anim, index) => {
               const backgroundColor = anim.interpolate({
                 inputRange: [0, 1],
@@ -73,7 +72,9 @@ const PixelLoadingBar = ({
         </View>
       </View>
 
-      <PixelText style={styles.pleaseWaitText}>Please wait....</PixelText>
+      <PixelText variant="pixel" style={styles.pleaseWaitText}>
+        Please wait....
+      </PixelText>
     </View>
   );
 };
@@ -81,10 +82,7 @@ const PixelLoadingBar = ({
 export default PixelLoadingBar;
 
 const styles = StyleSheet.create({
-  wrapper: {
-    alignItems: 'center',
-  },
-
+  loadingBarWrapper: {alignItems: 'center'},
   loadingText: {
     fontSize: 14,
     color: '#547CAF',
@@ -97,23 +95,13 @@ const styles = StyleSheet.create({
     marginTop: 4,
     letterSpacing: 1,
   },
-
-  barContainer: {
-    width: width * 0.65,
-  },
-  barOuter: {
+  loadingBarContainer: {width: 260},
+  loadingBarOuter: {
     borderWidth: 3,
     borderColor: '#547CAF',
     padding: 3,
     backgroundColor: '#E5F9FF',
   },
-  blocksRow: {
-    flexDirection: 'row',
-    gap: 3,
-  },
-  block: {
-    flex: 1,
-    height: 20,
-    backgroundColor: 'transparent',
-  },
+  blocksContainer: {flexDirection: 'row', gap: 3},
+  block: {flex: 1, height: 20},
 });

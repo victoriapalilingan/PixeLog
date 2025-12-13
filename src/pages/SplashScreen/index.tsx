@@ -9,7 +9,7 @@ import PixeLogLogo from '../../assets/PixeLogLogo.png';
 
 const {height} = Dimensions.get('window');
 
-const SplashScreen = () => {
+const SplashScreen = ({navigation}) => {
   const translateYAnim = useRef(new Animated.Value(height * 0.2)).current;
   const scaleAnim = useRef(new Animated.Value(0.5)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -68,7 +68,21 @@ const SplashScreen = () => {
         }),
       ]),
     ]).start();
-  }, [translateYAnim, scaleAnim, opacityAnim, rotateAnim, loadingBarOpacity]);
+
+    // ✅ pindah ke SignIn (biar Splash ga bisa balik)
+    const timer = setTimeout(() => {
+      navigation.replace('Auth', {mode: 'signIn'});
+    }, 1800);
+
+    return () => clearTimeout(timer);
+  }, [
+    navigation,
+    translateYAnim,
+    scaleAnim,
+    opacityAnim,
+    rotateAnim,
+    loadingBarOpacity,
+  ]);
 
   const rotate = rotateAnim.interpolate({
     inputRange: [0, 1],
@@ -118,7 +132,7 @@ const SplashScreen = () => {
         <SplashBranding
           logoSource={PixeLogLogo}
           loadingOpacity={loadingBarOpacity}
-          loadingMarginTop={0} // ✅ bikin makin nempel ke tulisan (coba 0 / -4 / -8)
+          loadingMarginTop={0}
         />
       </Animated.View>
     </LinearGradient>
@@ -128,13 +142,6 @@ const SplashScreen = () => {
 export default SplashScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    alignItems: 'center',
-    paddingBottom: 60,
-  },
+  container: {flex: 1, justifyContent: 'center', alignItems: 'center'},
+  content: {alignItems: 'center', paddingBottom: 60},
 });

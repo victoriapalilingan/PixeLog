@@ -1,52 +1,29 @@
-/**
- * Font Test App
- */
-
 import React from 'react';
-import {SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {StatusBar} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-function App() {
-  return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+import SplashScreen from './src/pages/SplashScreen';
+import AuthPage from './src/pages/AuthPage';
+import HomeScreen from './src/pages/Home';
 
-      <Text style={styles.title}>PIXELIFY FONT TEST</Text>
+const Stack = createNativeStackNavigator();
 
-      <Text style={styles.subtitle}>Jika font ini pixel → BERHASIL</Text>
-
-      <Text style={styles.normal}>PixelifySans-Bold.ttf</Text>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-
-  // ❌ TIDAK pakai fontWeight
-  title: {
-    fontFamily: 'PixelifySans-Bold',
-    fontSize: 32,
-    color: '#000',
-  },
-
-  subtitle: {
-    fontFamily: 'PixelifySans-Bold',
-    fontSize: 20,
-    marginTop: 12,
-    color: '#333',
-  },
-
-  normal: {
-    fontFamily: 'MontserratAlternates-ExtraBold',
-    fontSize: 16,
-    marginTop: 8,
-    color: '#666',
-  },
-});
+const App = () => (
+  <NavigationContainer>
+    <StatusBar
+      translucent
+      backgroundColor="transparent"
+      barStyle="dark-content"
+    />
+    <Stack.Navigator
+      initialRouteName="SplashScreen"
+      screenOptions={{headerShown: false}}>
+      <Stack.Screen name="SplashScreen" component={SplashScreen} />
+      <Stack.Screen name="Auth" component={AuthPage} />
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+    </Stack.Navigator>
+  </NavigationContainer>
+);
 
 export default App;

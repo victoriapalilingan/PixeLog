@@ -1,89 +1,149 @@
-import React from 'react';
-import {StyleSheet, View, Image} from 'react-native';
+import React, {useEffect, useMemo, useRef} from 'react';
+import {
+  StyleSheet,
+  View,
+  Image,
+  Animated,
+  Easing,
+  Dimensions,
+} from 'react-native';
+
 import PixelText from '../../atoms/PixelText';
 import PixelButton from '../../atoms/PixelButton';
 import AuthFooterLink from '../../molecules/AuthFooterLink';
 import Star from '../../../assets/Star.png';
 
-const SignInCard = ({
-  /* ===== Layout ===== */
-  cardHeight = '55%',
+const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
-  /* ===== Header ===== */
+const toPx = value => {
+  if (typeof value === 'number') return value;
+
+  if (typeof value === 'string' && value.includes('%')) {
+    const pct = parseFloat(value.replace('%', ''));
+    if (!Number.isNaN(pct)) return (pct / 100) * SCREEN_HEIGHT;
+  }
+
+  return 0.55 * SCREEN_HEIGHT;
+};
+
+const SignInCard = ({
   subtitle,
   title,
   description,
 
-  /* ===== Button ===== */
   primaryButtonTitle,
   onPressPrimary,
-  loading = false,
 
-  /* ===== Footer ===== */
   footerText,
   footerActionText,
   onPressFooter,
 
-  /* ===== Slot ===== */
+  loading = false,
+  cardHeight = '55%',
+
   children,
 }) => {
+  const targetHeight = useMemo(() => toPx(cardHeight), [cardHeight]);
+
+  // ✅ start height cuma dipakai sekali saat mount
+  const initial = useRef(null);
+  if (initial.current == null) {
+    initial.current = targetHeight; // pertama kali sesuai mode awal
+  }
+
+  // OUTER height (JS thread)
+  const animatedHeight = useRef(new Animated.Value(initial.current)).current;
+
+  // INNER (native) - hanya untuk efek sheet naik halus
+  const fade = useRef(new Animated.Value(1)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
+
+  // ✅ 1) Animasi masuk hanya sekali (opsional, mulus)
+  useEffect(() => {
+    fade.setValue(0);
+    translateY.setValue(14);
+
+    Animated.parallel([
+      Animated.timing(fade, {
+        toValue: 1,
+        duration: 220,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 420,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ✅ 2) Setiap targetHeight berubah (signIn <-> signUp), animasi dari height CURRENT ke target baru
+  useEffect(() => {
+    Animated.timing(animatedHeight, {
+      toValue: targetHeight,
+      duration: 520,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false, // ✅ height wajib false
+    }).start();
+  }, [animatedHeight, targetHeight]);
+
   return (
-    <View style={[styles.container, {minHeight: cardHeight}]}>
-      {/* Decorative */}
-      <View style={styles.decorLayer} pointerEvents="none">
-        <View style={[styles.decorBox, styles.decorTopRight]} />
-        <View style={[styles.decorBox, styles.decorRightTall]} />
-        <View style={[styles.decorBox, styles.decorLeftMid]} />
-        <View style={[styles.decorBox, styles.decorBottomLeft]} />
-      </View>
+    <Animated.View style={[styles.container, {height: animatedHeight}]}>
+      <Animated.View
+        style={[styles.inner, {opacity: fade, transform: [{translateY}]}]}>
+        {/* Decorative */}
+        <View style={styles.decorLayer} pointerEvents="none">
+          <View style={[styles.decorBox, styles.decorTopRight]} />
+          <View style={[styles.decorBox, styles.decorRightTall]} />
+          <View style={[styles.decorBox, styles.decorLeftMid]} />
+          <View style={[styles.decorBox, styles.decorBottomLeft]} />
+        </View>
 
-      {/* Handle */}
-      <View style={styles.handle} />
+        <View style={styles.handle} />
+        <Image source={Star} style={styles.starIcon} resizeMode="contain" />
 
-      {/* Star */}
-      <Image source={Star} style={styles.starIcon} resizeMode="contain" />
+        <View style={styles.header}>
+          {!!subtitle && (
+            <PixelText variant="pixel" weight="regular" style={styles.subtitle}>
+              {subtitle}
+            </PixelText>
+          )}
 
-      {/* Header */}
-      <View style={styles.header}>
-        {subtitle && (
-          <PixelText variant="pixel" style={styles.subtitle}>
-            {subtitle}
-          </PixelText>
-        )}
+          {!!title && (
+            <PixelText variant="pixel" weight="bold" style={styles.title}>
+              {title}
+            </PixelText>
+          )}
 
-        {title && (
-          <PixelText variant="pixel" weight="bold" style={styles.title}>
-            {title}
-          </PixelText>
-        )}
+          {!!description && (
+            <PixelText
+              variant="montserrat"
+              weight="regular"
+              style={styles.description}>
+              {description}
+            </PixelText>
+          )}
+        </View>
 
-        {description && (
-          <PixelText variant="montserrat" style={styles.description}>
-            {description}
-          </PixelText>
-        )}
-      </View>
+        <View style={styles.formContainer}>{children}</View>
 
-      {/* Slot Form */}
-      <View style={styles.formContainer}>{children}</View>
+        <PixelButton
+          title={primaryButtonTitle || 'Continue'}
+          onPress={onPressPrimary}
+          loading={loading}
+          disabled={loading}
+        />
 
-      {/* Primary Button */}
-      <PixelButton
-        title={primaryButtonTitle}
-        onPress={onPressPrimary}
-        loading={loading}
-        disabled={loading}
-      />
-
-      {/* Footer */}
-      {footerText && footerActionText && (
         <AuthFooterLink
           text={footerText}
           actionText={footerActionText}
           onPress={onPressFooter}
         />
-      )}
-    </View>
+      </Animated.View>
+    </Animated.View>
   );
 };
 
@@ -95,28 +155,30 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#000',
+
     borderTopLeftRadius: 48,
     borderTopRightRadius: 48,
+
     paddingHorizontal: 24,
     paddingTop: 18,
     paddingBottom: 28,
+
     shadowColor: '#000',
     shadowOffset: {width: 0, height: -4},
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 10,
+
     overflow: 'hidden',
   },
+  inner: {flex: 1},
 
   decorLayer: {...StyleSheet.absoluteFillObject},
-  decorBox: {
-    position: 'absolute',
-    backgroundColor: '#96CAE8',
-    opacity: 0.19,
-  },
+  decorBox: {position: 'absolute', backgroundColor: '#96CAE8', opacity: 0.19},
   decorTopRight: {top: 20, right: 50, width: 48, height: 48},
   decorRightTall: {top: 0, right: 0, width: 72, height: 140},
   decorLeftMid: {top: 200, left: 0, width: 64, height: 72},
@@ -129,6 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     alignSelf: 'center',
     marginBottom: 16,
+    zIndex: 2,
   },
   starIcon: {
     position: 'absolute',
@@ -136,15 +199,13 @@ const styles = StyleSheet.create({
     right: 24,
     width: 35,
     height: 35,
+    zIndex: 2,
   },
-  header: {marginBottom: 20},
+
+  header: {marginBottom: 18, zIndex: 2},
   subtitle: {fontSize: 14, color: '#000', marginBottom: 4},
   title: {fontSize: 22, color: '#000', marginBottom: 8},
-  description: {
-    fontSize: 11,
-    lineHeight: 16,
-    color: '#000',
-    maxWidth: '90%',
-  },
-  formContainer: {marginBottom: 18},
+  description: {fontSize: 11, lineHeight: 16, color: '#000', maxWidth: '90%'},
+
+  formContainer: {marginBottom: 16, zIndex: 2},
 });

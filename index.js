@@ -9,5 +9,6 @@ import SplashScreen from './src/pages/SplashScreen';
 import SignInPage from './src/pages/SignIn';
 import SignUpPage from './src/pages/SignUp';
 import HomeScreen from './src/pages/Home';
+import WriteJournal from './src/pages/WriteJournal';
 
-AppRegistry.registerComponent(appName, () => HomeScreen);
+AppRegistry.registerComponent(appName, () => WriteJournal);

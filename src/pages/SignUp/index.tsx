@@ -14,11 +14,13 @@ import SignInCard from '../../components/organism/SignInCard';
 import AuthField from '../../components/molecules/AuthField';
 import PixeLogLogo from '../../assets/PixeLog.png';
 
-const SignUpPage = ({navigation}) => {
+const SignUpPage = ({navigation, route}) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const fromHeight = route?.params?.fromHeight; // ✅ dari SignIn biasanya "55%"
 
   const handleSignUp = () => {
     setLoading(true);
@@ -29,7 +31,8 @@ const SignUpPage = ({navigation}) => {
   };
 
   const handleGoToSignIn = () => {
-    // navigation.navigate('SignIn');
+    // ✅ dari SignUp (65%) ke SignIn (55%)
+    navigation.navigate('SignIn', {fromHeight: '65%'});
   };
 
   return (
@@ -70,7 +73,6 @@ const SignUpPage = ({navigation}) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
-          {/* ✅ LOGO DINAİKKAN */}
           <View style={styles.logoContainer}>
             <Image
               source={PixeLogLogo}
@@ -88,7 +90,10 @@ const SignUpPage = ({navigation}) => {
             footerText="Already have an account?"
             footerActionText="Sign In"
             onPressFooter={handleGoToSignIn}
-            cardHeight="65%">
+            loading={loading}
+            cardHeight="65%"
+            initialHeight={fromHeight || '55%'} // ✅ start 55% lalu naik ke 65% (kalau datang dari SignIn)
+          >
             <AuthField
               label="Name"
               placeholder="yourname"
@@ -121,26 +126,13 @@ const SignUpPage = ({navigation}) => {
 export default SignUpPage;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'space-between',
-  },
-
-  /* 🔼 LOGO DIANGKAT KE ATAS */
+  container: {flex: 1},
+  keyboardView: {flex: 1},
+  scrollContent: {flexGrow: 1, justifyContent: 'space-between'},
   logoContainer: {
     alignItems: 'center',
-    marginTop: -30, // ⬅️ UBAH INI ( -40 / -60 / -80 )
+    marginTop: -30,
     marginBottom: 0,
   },
-
-  logo: {
-    width: 360, // boleh kecilkan dikit biar proporsional
-    height: 360,
-  },
+  logo: {width: 360, height: 360},
 });
