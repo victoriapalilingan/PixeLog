@@ -1,10 +1,6 @@
 import React from 'react';
-import {View, TextInput, Text, StyleSheet} from 'react-native';
-
-// Component PixelText untuk label (sesuaikan dengan PixelText component Anda)
-const PixelText = ({children, style}) => (
-  <Text style={[styles.pixelFont, style]}>{children}</Text>
-);
+import {View, TextInput, StyleSheet} from 'react-native';
+import PixelText from '../../atoms/PixelText';
 
 const JournalTitleField = ({
   label = 'Title',
@@ -35,17 +31,14 @@ const JournalTitleField = ({
 };
 
 const styles = StyleSheet.create({
-  pixelFont: {
-    fontFamily: 'PixelifySans-Regular',
-  },
   outerFrame: {
-    backgroundColor: '#96CAE8', // Biru pastel dari Figma
+    backgroundColor: '#96CAE8',
     borderColor: '#000',
-    borderWidth: 4, // Border tebal pixel-style
+    borderWidth: 4,
     borderRadius: 18,
     padding: 12,
-    width: 372, // Atau ganti jadi 370 kalau mau fixed width
-    marginLeft: 20,
+    width: '100%', // ✅ FULL WIDTH
+    // ✅ NO marginLeft
   },
   innerCard: {
     backgroundColor: '#FFF',
@@ -58,7 +51,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 24,
     color: '#000',
-    marginBottom: 4, // Jarak rapat dengan input
+    marginBottom: 4,
     fontFamily: 'PixelifySans-Regular',
   },
   input: {

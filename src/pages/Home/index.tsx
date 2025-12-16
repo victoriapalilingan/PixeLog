@@ -15,6 +15,7 @@ import Gap from '../../components/atoms/Gap';
 import JournalHighlightCard from '../../components/molecules/JournalHighligtCard';
 import QuickActionsGrid from '../../components/organism/QuickActionsGrid';
 import RecentLogsSection from '../../components/organism/RecentLogsSection';
+import BottomNavigation from '../../components/organism/BottomNavigation';
 
 const NAV_HEIGHT_GUESS = 70;
 
@@ -60,12 +61,12 @@ const HomeScreen = ({navigation}) => {
 
       {/* Background Gradient */}
       <CheckerboardBackground />
+      <HomeHeader userName="Victoria" />
 
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
-        <HomeHeader userName="Victoria" />
         <Gap height={12} />
 
         <View style={styles.section}>
@@ -73,7 +74,7 @@ const HomeScreen = ({navigation}) => {
         </View>
         <Gap height={16} />
 
-        <QuickActionsGrid />
+        <QuickActionsGrid navigation={navigation} />
 
         <Gap height={20} />
 
@@ -108,6 +109,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: 120, //
   },
   section: {
     paddingHorizontal: 16,

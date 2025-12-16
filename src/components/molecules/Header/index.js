@@ -1,9 +1,10 @@
 import React from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import PixelText from '../../atoms/PixelText';
 import PixelIcon from '../../atoms/PixelIcon';
 
-import BackIcon from '../../../assets/Back To.png'; // sesuaikan asset
+import BackIcon from '../../../assets/Back To.svg';
 import StarIcon from '../../../assets/Star.png';
 
 const PixelHeader = ({
@@ -13,12 +14,25 @@ const PixelHeader = ({
   rightIcon = StarIcon,
   onPressRight,
 }) => {
+  const navigation = useNavigation();
+
+  const handleBack = () => {
+    if (onPressBack) {
+      onPressBack();
+      return;
+    }
+
+    if (navigation?.canGoBack()) {
+      navigation.goBack();
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* ===== Left (Back Button or Spacer) ===== */}
+      {/* ===== LEFT ===== */}
       {showBack ? (
         <TouchableOpacity
-          onPress={onPressBack}
+          onPress={handleBack}
           activeOpacity={0.7}
           style={styles.leftButton}>
           <PixelIcon source={BackIcon} size={18} />
@@ -27,7 +41,7 @@ const PixelHeader = ({
         <View style={styles.leftSpacer} />
       )}
 
-      {/* ===== Title ===== */}
+      {/* ===== TITLE ===== */}
       <PixelText
         variant="pixel"
         weight="bold"
@@ -36,7 +50,7 @@ const PixelHeader = ({
         {title}
       </PixelText>
 
-      {/* ===== Right Icon ===== */}
+      {/* ===== RIGHT ===== */}
       {rightIcon ? (
         <TouchableOpacity
           onPress={onPressRight}
@@ -51,32 +65,25 @@ const PixelHeader = ({
   );
 };
 
-export default PixelHeader;
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-
     height: 52,
-    width: 370,
+    width: '100%', // ✅ FULL WIDTH
     paddingHorizontal: 16,
-
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#000000',
-
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 2,
-    marginLeft: 20,
-    marginTop: 20,
+    // ✅ NO marginLeft/marginTop
   },
-
-  /* ===== Left ===== */
   leftButton: {
     width: 32,
     height: 32,
@@ -90,8 +97,6 @@ const styles = StyleSheet.create({
   leftSpacer: {
     width: 32,
   },
-
-  /* ===== Title ===== */
   title: {
     flex: 1,
     textAlign: 'center',
@@ -99,8 +104,6 @@ const styles = StyleSheet.create({
     color: '#000',
     letterSpacing: 0.5,
   },
-
-  /* ===== Right ===== */
   rightButton: {
     width: 32,
     height: 32,
@@ -111,3 +114,5 @@ const styles = StyleSheet.create({
     width: 32,
   },
 });
+
+export default PixelHeader;

@@ -7,27 +7,35 @@ const ACTIONS = [
     id: 1,
     icon: require('../../../assets/Pen.png'),
     title: 'Write Journal',
+    route: 'WriteJournalPage',
   },
   {
     id: 2,
     icon: require('../../../assets/Folder.png'),
     title: 'View Entries',
+    route: 'ViewEntries',
   },
   {
     id: 3,
     icon: require('../../../assets/Clock.png'),
     title: 'Today Summary',
+    route: 'SummaryPage',
   },
   {
     id: 4,
     icon: require('../../../assets/Happy.png'),
     title: 'Mood Check',
+    route: 'MoodCheckPage',
   },
 ];
-
-const QuickActionsGrid = () => {
+const QuickActionsGrid = ({navigation}) => {
   const handleActionPress = action => {
-    console.log('Action pressed:', action.title);
+    if (action.route) {
+      navigation.navigate(action.route);
+      return;
+    }
+
+    console.log('No route defined for:', action.title);
   };
 
   return (
@@ -45,7 +53,9 @@ const QuickActionsGrid = () => {
           onPress={() => handleActionPress(ACTIONS[1])}
         />
       </View>
+
       <View style={styles.rowGap} />
+
       <View style={styles.row}>
         <QuickActionCard
           icon={ACTIONS[2].icon}

@@ -1,138 +1,111 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
-  StyleSheet,
   View,
+  StyleSheet,
   ScrollView,
-  StatusBar,
-  ActivityIndicator,
-  Text,
-  Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-
 import CheckerboardBackground from '../../components/molecules/CheckerdboardBackground';
-import Gap from '../../components/atoms/Gap';
 import PixelHeader from '../../components/molecules/Header';
-import JournalTitleField from '../../components/molecules/TextInput';
-import PixelButton from '../../components/atoms/PixelButton';
+import WriteJournalForm from '../../components/organism/WriteJournalForm';
+import WriteJournalFooter from '../../components/organism/WriteJournalFooter';
+import Gap from '../../components/atoms/Gap';
 
-const useHomeData = () => {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setData({userName: 'Victoria'});
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(t);
-  }, []);
-
-  return {loading, data};
-};
-
-const WriteJournal = ({navigation}) => {
-  const {loading} = useHomeData();
-
+const WriteJournalPage = ({navigation}) => {
   const [title, setTitle] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [mood, setMood] = useState('happy');
+  const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = () => {
-    // contoh validasi simple
-    if (!title.trim()) {
-      Alert.alert('Oops', 'Title tidak boleh kosong.');
+  const handleSave = async () => {
+    if (!title.trim() || !content.trim()) {
+      alert('Please fill in all fields');
       return;
     }
 
-    setSaving(true);
+    setLoading(true);
 
-    setTimeout(() => {
-      setSaving(false);
+    try {
+      // API call atau save logic
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // UI only: sementara log
-      console.log('SAVE ENTRY:', {title});
+      console.log('Saved:', {title, mood, content});
+      alert('Journal saved successfully! 📝');
 
-      Alert.alert('Saved!', 'Entry berhasil disimpan (UI only).');
-      // kalau mau balik:
-      // navigation.goBack();
-    }, 600);
+      // Reset form
+      setTitle('');
+      setContent('');
+      setMood('happy');
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('Failed to save journal');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <StatusBar
-          translucent
-          backgroundColor="transparent"
-          barStyle="dark-content"
-        />
-        <ActivityIndicator size="large" color="#547CAF" />
-        <Text style={styles.loadingText}>Loading your diary...</Text>
-      </View>
-    );
-  }
+  const handleBack = () => {
+    if (navigation?.goBack) {
+      navigation.goBack();
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="dark-content"
-      />
+    <CheckerboardBackground>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled">
+          <View style={styles.container}>
+            <Gap height={30} />
+            {/* Header */}
+            <PixelHeader
+              title="Write Journal"
+              showBack
+              onPressRight={() => console.log('Star pressed')}
+            />
 
-      <CheckerboardBackground />
+            <Gap height={24} />
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
-        <Gap height={50} />
+            {/* Form */}
+            <WriteJournalForm
+              title={title}
+              onTitleChange={setTitle}
+              mood={mood}
+              onMoodChange={setMood}
+              content={content}
+              onContentChange={setContent}
+            />
 
-        <PixelHeader
-          title="Write Journal"
-          showBack
-          onPressBack={() => navigation.goBack()}
-        />
+            <Gap height={24} />
 
-        <Gap height={12} />
+            {/* Footer Button */}
+            <WriteJournalFooter onSave={handleSave} loading={loading} />
 
-        <JournalTitleField
-          label="Title"
-          placeholder="Write Your Title...."
-          value={title}
-          onChangeText={setTitle}
-        />
-
-        <Gap height={14} />
-
-        <PixelButton
-          title={saving ? 'Saving...' : 'Save Entry'}
-          onPress={onSubmit}
-          disabled={saving}
-        />
-
-        <Gap height={24} />
-      </ScrollView>
-    </View>
+            <Gap height={40} />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </CheckerboardBackground>
   );
 };
 
-export default WriteJournal;
-
 const styles = StyleSheet.create({
-  container: {flex: 1},
-  loadingContainer: {
+  keyboardView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#E5F9FF',
   },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 14,
-    color: '#547CAF',
-    fontFamily: 'PixelifySans-Bold',
+  scrollContent: {
+    flexGrow: 1,
+    paddingVertical: 20,
   },
-  scrollView: {flex: 1},
-  scrollContent: {flexGrow: 1, paddingHorizontal: 16},
+  container: {
+    paddingHorizontal: 20, // ✅ SPACING GLOBAL
+    width: '100%',
+  },
 });
+
+export default WriteJournalPage;

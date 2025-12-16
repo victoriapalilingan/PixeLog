@@ -86,7 +86,7 @@ const AuthPage = ({route, navigation}) => {
         return;
       }
 
-      navigation.replace('HomeScreen');
+      navigation.replace('Main');
     }, 600);
   };
 
